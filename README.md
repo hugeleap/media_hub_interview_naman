@@ -31,6 +31,7 @@ Mongodb options you can use a local or a remote database:
 
 - create user : localhost:3000/user/
 - get user : localhost:3000/user/userId
+- get users: localhost:3000/user?sort=sortOption&order=sortOrder&pageSize=pageSize
 - update user : localhost:3000/user/
 
 ### Posts:
