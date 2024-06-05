@@ -52,6 +52,13 @@ export const CreatePost = async (
         })
       );
     } else {
+      if (await isRateExceeded()) {
+        return next(
+          res.status(429).json({
+            message: "Too many requests, please try again in some time.",
+          })
+        );
+      }
       const newPost = await addPost(postModelValidation);
       if (newPost) {
         res.status(201).json({
@@ -266,3 +273,9 @@ export const updatePost = async (
     next(error);
   }
 };
+
+async function isRateExceeded () {
+  const timeBeforeOneMinute = new Date().setMilliseconds(new Date().getMilliseconds() - 60000);
+  const postsInLastMinute = await Post.find({createdAt: {$gte: timeBeforeOneMinute}});
+  return postsInLastMinute.length > 4
+}
