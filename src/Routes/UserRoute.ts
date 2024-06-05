@@ -5,6 +5,9 @@ import * as UserController from "../Controllers/UserController";
 //create user
 router.post("/", UserController.createUser);
 
+//get users
+router.get("/", UserController.getUsers);
+
 //get user
 router.get("/:userId", UserController.getUser);
 

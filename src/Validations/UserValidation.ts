@@ -7,3 +7,9 @@ export const UserValidation = Joi.object({
 });
 
 export const UserIdValidation = Joi.string().alphanum().required();
+
+export const UsersValidation = Joi.object({
+  sort: Joi.string().required().valid("post"),
+  order: Joi.string().required().valid("desc"),
+  pageSize: Joi.number().positive().required(),
+});

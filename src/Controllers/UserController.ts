@@ -1,11 +1,12 @@
 import { Request, Response, NextFunction } from "express";
-import Post from "../Models/User";
+import Post from "../Models/Post";
 import createError from "http-errors";
 import User from "../Models/User";
 import { Iuser } from "../Types/Iuser";
 import {
   UserValidation,
   UserIdValidation,
+  UsersValidation,
 } from "../Validations/UserValidation";
 
 /**
@@ -209,3 +210,42 @@ export const getUser = async (
     next(error);
   }
 };
+
+/**
+ * Get users
+ * @param req
+ * @param res
+ * @param next
+ */
+export const getUsers = async(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try{
+    await UsersValidation.validateAsync(req.query)
+    
+    const pageSize = parseInt(req.query.pageSize as string)
+    
+    const usersPostCount = await Post.aggregate()
+    .sortByCount('user')
+    .limit(pageSize)
+    .lookup({from: "users", localField: "_id", foreignField: "_id", as: "user"})
+    
+    const response = usersPostCount.map(userPostCount => userPostCount.user[0])
+    
+    res.status(200).json({
+      users: response
+    });
+  }
+  catch (error) {
+    if (error.isJoi === true) {
+      return next(
+        res.status(400).json({
+          message: error.message,
+        })
+      );
+    }
+    next(error);
+  }
+}
